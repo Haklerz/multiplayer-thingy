@@ -1,0 +1,9 @@
+# Ignore VS Code environment
+.vscode
+
+# Ignore build directories
+bin
+obj
+
+# Ignore notes
+notes.md
