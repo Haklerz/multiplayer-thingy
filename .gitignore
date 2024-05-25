@@ -1,3 +1,9 @@
+# Ignore compiled libraries
+*.a
+*.so
+*.dll
+*.dylib
+
 # Ignore VS Code environment
 .vscode
 
