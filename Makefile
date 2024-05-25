@@ -12,18 +12,15 @@ LDFLAGS_CLIENT := -L lib -lraylib -lopengl32 -lgdi32 -lwinmm # -lws2_32
 LDFLAGS_SERVER := # -lws2_32
 
 # Source files
-SRCS_COMMON := \
-src/events.c
-
 SRCS_CLIENT := \
 src/client.c \
-src/game_server.c
+src/events.c \
+src/world.c
 
 SRCS_SERVER := \
 src/server.c
 
 # Object files
-OBJS_COMMON := $(subst src, obj, $(SRCS_COMMON:.c=.o))
 OBJS_CLIENT := $(subst src, obj, $(SRCS_CLIENT:.c=.o))
 OBJS_SERVER := $(subst src, obj, $(SRCS_SERVER:.c=.o))
 
@@ -43,13 +40,13 @@ client: $(TARGET_CLIENT)
 server: $(TARGET_SERVER)
 
 # Build client executible
-$(TARGET_CLIENT): $(OBJS_COMMON) $(OBJS_CLIENT) | bin
+$(TARGET_CLIENT): $(OBJS_CLIENT) | bin
 	@echo.
 	@echo Linking executible: $@
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS_CLIENT)
 
 # Build server executible
-$(TARGET_SERVER): $(OBJS_COMMON) $(OBJS_SERVER) | bin
+$(TARGET_SERVER): $(OBJS_SERVER) | bin
 	@echo.
 	@echo Linking executible: $@
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS_SERVER)
@@ -63,13 +60,19 @@ obj/%.o: src/%.c | obj
 # Header dependencies
 src/client.c: \
 include/events.h \
-include/game_server.h
+include/entity.h \
+include/world.h
 
 src/server.c: \
 include/events.h
 
 src/events.c: \
 include/events.h
+
+src/world.c: \
+include/world.h \
+include/events.h \
+include/entity.h
 
 # Make build directories
 bin obj:

@@ -7,16 +7,22 @@
 
 // Enumerates the different kinds of possible events.
 typedef enum {
-	EK_HEARTBEAT
+	EK_HEARTBEAT,
+	EK_ENTITY_MOVED
 } EventKind;
+
+typedef struct {
+	float delta_x, delta_y;
+} EventEntityMoved;
 
 // Encodes a game event.
 typedef struct {
-	uint16_t source_id;
+	uint16_t entity_id;
 	uint16_t sequence_number;
+	
 	EventKind kind;
 	union {
-
+		EventEntityMoved entity_moved;
 	};
 } Event;
 
