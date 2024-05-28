@@ -17,7 +17,7 @@ typedef struct {
 
 // Encodes a game event.
 typedef struct {
-	uint16_t entity_id;
+	uint16_t entity_slot;
 	uint16_t sequence_number;
 	
 	EventKind kind;

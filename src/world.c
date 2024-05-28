@@ -9,8 +9,8 @@ static float next_heartbeat_request = 0.0;
 static const float heartbeat_request_interval = 1.0;
 
 // Entities.
-#define MAX_ENTITIES 1
-static Entity *entitites[MAX_ENTITIES];
+#define MAX_ENTITY_COUNT 10
+static Entity *entitites[MAX_ENTITY_COUNT];
 
 static EventBuffer world_event_buffer;
 
@@ -29,14 +29,14 @@ void world_update(const float delta_time) {
 		switch (event.kind) {
 
 		case EK_HEARTBEAT:
-			fprintf(stderr, "World: Got heartbeat from entity %d.\n", event.entity_id);
+			fprintf(stderr, "World: Got heartbeat from entity %d.\n", event.entity_slot);
 			break;
 
 		case EK_ENTITY_MOVED:
-			fprintf(stderr, "World: Got move request from entity %d.\n", event.entity_id);
+			fprintf(stderr, "World: Got move request from entity %d.\n", event.entity_slot);
 
 			Event move_event = {
-				.entity_id = event.entity_id,
+				.entity_slot = event.entity_slot,
 				.kind = EK_ENTITY_MOVED,
 				.sequence_number = event.sequence_number + 1,
 				.entity_moved = {
@@ -45,7 +45,12 @@ void world_update(const float delta_time) {
 				}
 			};
 
-			event_buffer_write(&entitites[0]->world_events, &move_event);
+			for (int slot = 0; slot < MAX_ENTITY_COUNT; ++slot) {
+				if (!entitites[slot])
+					continue;
+				
+				event_buffer_write(&entitites[slot]->world_events, &move_event);
+			}
 			break;
 		
 		default:
@@ -55,7 +60,7 @@ void world_update(const float delta_time) {
 
 	// Request heartbeats from all entities.
 	if (current_time > next_heartbeat_request) {
-		for (int i = 0; i < MAX_ENTITIES; ++i) {
+		for (int i = 0; i < MAX_ENTITY_COUNT; ++i) {
 			if (!entitites[i])
 				continue;
 
@@ -64,7 +69,7 @@ void world_update(const float delta_time) {
 			Event event = {
 				.kind = EK_HEARTBEAT,
 				.sequence_number = 0,
-				.entity_id = i
+				.entity_slot = i
 			};
 			event_buffer_write(&entitites[i]->world_events, &event);
 		}
@@ -77,13 +82,31 @@ int world_submit_event(Event *event) {
 	return event_buffer_write(&world_event_buffer, event);
 }
 
+// Finds a free entity slot. Returns a non-zero value on error.
+int get_free_entity_slot(uint16_t *slot) {
+
+	for (int i = 0; i < MAX_ENTITY_COUNT; ++i) {
+		if (entitites[i])
+			continue;
+		
+		*slot = i;
+		return 0;
+	}
+
+	return 1;
+}
+
 int world_add_entity(Entity *entity) {
 	if (!entity)
 		return 1;
+
+	uint16_t slot;
+	int result = get_free_entity_slot(&slot);
+	if (result != 0)
+		return result;
 	
-	// TODO(HL): Support adding multiple entities to the world.
-	entitites[0] = entity;
-	entity->id = 0;
+	entitites[slot] = entity;
+	entity->slot = slot;
 
 	return 0;
 }
