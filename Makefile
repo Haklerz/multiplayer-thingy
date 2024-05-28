@@ -17,27 +17,27 @@ src/client.c \
 src/events.c \
 src/world.c
 
-SRCS_SERVER := \
-src/server.c
+# SRCS_SERVER := \
+# src/server.c
 
 # Object files
 OBJS_CLIENT := $(subst src, obj, $(SRCS_CLIENT:.c=.o))
-OBJS_SERVER := $(subst src, obj, $(SRCS_SERVER:.c=.o))
+# OBJS_SERVER := $(subst src, obj, $(SRCS_SERVER:.c=.o))
 
 # Build Targets
 TARGET_CLIENT := bin/client.exe
-TARGET_SERVER := bin/server.exe
+# TARGET_SERVER := bin/server.exe
 
 # ------------------------------------
 
 # Default target
-all: $(TARGET_CLIENT) $(TARGET_SERVER)
+all: $(TARGET_CLIENT)
 
 # Build client
 client: $(TARGET_CLIENT)
 
 # Build server
-server: $(TARGET_SERVER)
+# server: $(TARGET_SERVER)
 
 # Build client executible
 $(TARGET_CLIENT): $(OBJS_CLIENT) | bin
@@ -46,10 +46,10 @@ $(TARGET_CLIENT): $(OBJS_CLIENT) | bin
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS_CLIENT)
 
 # Build server executible
-$(TARGET_SERVER): $(OBJS_SERVER) | bin
-	@echo.
-	@echo Linking executible: $@
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS_SERVER)
+# $(TARGET_SERVER): $(OBJS_SERVER) | bin
+# 	@echo.
+# 	@echo Linking executible: $@
+# 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS_SERVER)
 
 # Compile source files to object files
 obj/%.o: src/%.c | obj
@@ -60,19 +60,16 @@ obj/%.o: src/%.c | obj
 # Header dependencies
 src/client.c: \
 include/events.h \
-include/entity.h \
 include/world.h
 
-src/server.c: \
-include/events.h
+# src/server.c: 
 
 src/events.c: \
 include/events.h
 
 src/world.c: \
 include/world.h \
-include/events.h \
-include/entity.h
+include/events.h
 
 # Make build directories
 bin obj:
