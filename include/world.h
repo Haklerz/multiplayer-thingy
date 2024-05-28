@@ -2,7 +2,12 @@
 #define WORLD_H_
 
 #include "events.h"
-#include "entity.h"
+
+typedef struct {
+	uint16_t slot; // The slot of the entity.
+	float world_x, world_y; // The entity's position within the world.
+	EventBuffer world_events; // Buffer for receiving events from the world.
+} Entity;
 
 // Initializes the world.
 void world_init();
